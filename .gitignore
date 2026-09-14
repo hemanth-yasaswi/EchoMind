@@ -1,0 +1,8 @@
+.aider*
+venv/
+__pycache__/
+*.pyc
+
+datasets/
+models/
+logs/

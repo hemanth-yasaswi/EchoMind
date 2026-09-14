@@ -236,7 +236,7 @@ def main():
     model.fit(
         train_ds,
         validation_data=val_ds,
-        epochs=120,
+        epochs=100,
         callbacks=[early_stop, checkpoint, reduce_lr],
         verbose=2,
     )
