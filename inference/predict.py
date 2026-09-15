@@ -1,5 +1,5 @@
 import numpy as np
-import keras.models
+import tensorflow.keras.models
 from preprocessing.mel import extract_mel_spectrogram
 
 
@@ -16,7 +16,7 @@ class AudioPredictor:
         Load the pre-trained Keras model.
         """
         try:
-            model = keras.models.load_model(model_path)
+            model = tensorflow.keras.models.load_model(model_path)
             return model
         except Exception as e:
             raise FileNotFoundError(f"Model not found at {model_path}. Error: {e}")
@@ -41,7 +41,7 @@ class AudioPredictor:
         """
         # Extract and preprocess the spectrogram
         spectrogram = extract_mel_spectrogram(audio_file_path)
-        spectrogram = np.expand_dims(spectrogram, axis=0)  # Add batch dimension
+        spectrogram = np.expand_dims(spectrogram, axis=(0, -1))  # Add batch and channel dimensions
 
         # Get model predictions
         predictions = self.model.predict(spectrogram)[0]  # Remove batch dimension
@@ -51,11 +51,3 @@ class AudioPredictor:
         top_classes = [(self.class_labels[i], float(predictions[i])) for i in top_indices]
 
         return top_classes
-
-
-# Example usage (can be removed in production)
-if __name__ == "__main__":
-    predictor = AudioPredictor()
-    results = predictor.predict("datasets/esc50/audio/1-137-A-32.wav")
-    for label, score in results:
-        print(f"{label}: {score:.4f}")
