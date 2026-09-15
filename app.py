@@ -25,7 +25,7 @@ def main():
     # Print top-5 predictions
     print("Top 5 Predictions:")
     for label, score in predictions:
-        print(f"{label}: {score:.2f}")
+        print(f"{label.replace('_', ' '):20} {score*100:6.2f}%")
 
 
 if __name__ == "__main__":
