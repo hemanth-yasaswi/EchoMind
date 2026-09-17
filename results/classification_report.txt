@@ -1,0 +1,56 @@
+                  precision    recall  f1-score   support
+
+             dog      0.462     0.750     0.571         8
+         rooster      0.727     1.000     0.842         8
+             pig      0.600     0.375     0.462         8
+             cow      1.000     0.875     0.933         8
+            frog      1.000     0.250     0.400         8
+             cat      0.727     1.000     0.842         8
+             hen      0.750     0.750     0.750         8
+         insects      0.800     1.000     0.889         8
+           sheep      0.875     0.875     0.875         8
+            crow      1.000     0.875     0.933         8
+            rain      1.000     1.000     1.000         8
+       sea_waves      0.700     0.875     0.778         8
+  crackling_fire      0.455     0.625     0.526         8
+        crickets      0.636     0.875     0.737         8
+  chirping_birds      0.636     0.875     0.737         8
+     water_drops      0.400     0.250     0.308         8
+            wind      0.571     0.500     0.533         8
+   pouring_water      0.600     0.750     0.667         8
+    toilet_flush      0.667     1.000     0.800         8
+    thunderstorm      0.778     0.875     0.824         8
+     crying_baby      0.778     0.875     0.824         8
+        sneezing      0.600     0.750     0.667         8
+        clapping      0.667     0.500     0.571         8
+       breathing      1.000     0.250     0.400         8
+        coughing      0.636     0.875     0.737         8
+       footsteps      0.500     0.750     0.600         8
+        laughing      0.833     0.625     0.714         8
+  brushing_teeth      0.833     0.625     0.714         8
+         snoring      0.800     1.000     0.889         8
+drinking_sipping      0.667     0.250     0.364         8
+ door_wood_knock      0.727     1.000     0.842         8
+     mouse_click      0.500     0.125     0.200         8
+ keyboard_typing      0.636     0.875     0.737         8
+door_wood_creaks      1.000     0.625     0.769         8
+     can_opening      0.400     0.250     0.308         8
+ washing_machine      0.375     0.375     0.375         8
+  vacuum_cleaner      0.857     0.750     0.800         8
+     clock_alarm      0.778     0.875     0.824         8
+      clock_tick      0.556     0.625     0.588         8
+  glass_breaking      0.600     0.375     0.462         8
+      helicopter      0.000     0.000     0.000         8
+        chainsaw      0.875     0.875     0.875         8
+           siren      1.000     0.500     0.667         8
+        car_horn      0.571     1.000     0.727         8
+          engine      0.385     0.625     0.476         8
+           train      0.667     0.750     0.706         8
+    church_bells      1.000     0.875     0.933         8
+        airplane      0.500     0.125     0.200         8
+       fireworks      1.000     0.125     0.222         8
+        hand_saw      0.615     1.000     0.762         8
+
+        accuracy                          0.672       400
+       macro avg      0.695     0.672     0.647       400
+    weighted avg      0.695     0.672     0.647       400
