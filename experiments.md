@@ -142,3 +142,34 @@ The residual block produced the largest improvement of the project so far, confi
 
 
 
+## E05 — Squeeze-and-Excitation Block
+
+Status: Completed
+
+Hypothesis:
+Channel attention will improve feature selection by emphasizing informative feature maps and suppressing less useful ones.
+
+Changed:
+- Added an SE block inside the residual block.
+
+Constants:
+- Learning rate: 3e-4
+- SpecAugment: 8×8
+- Dropout: 0.4
+- Epochs: 100
+- Batch size: 32
+- Label smoothing: 0.1
+
+Results:
+- Train Accuracy: 78.05%
+- Validation Accuracy: 75.94%
+- Test Accuracy: 67.00%
+
+Difference from E04:
++9.25%
+
+Conclusion:
+The SE block significantly improved generalization while adding only a small number of parameters, making it the best-performing architecture so far.
+
+
+

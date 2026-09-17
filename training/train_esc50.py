@@ -21,6 +21,8 @@ from tensorflow.keras.layers import (
     Dropout,
     Dense,
     Add,
+    Reshape,
+    Multiply,
 )
 from tensorflow.keras.models import Model
 
@@ -132,6 +134,22 @@ def make_train_dataset(X, y, batch_size=32):
     ds = ds.batch(batch_size).prefetch(tf.data.AUTOTUNE)
     return ds
 
+
+def se_block(x, reduction=16):
+    filters = x.shape[-1]
+
+    # Squeeze
+    se = GlobalAveragePooling2D()(x)
+    se = Reshape((1, 1, filters))(se)
+
+    # Excitation
+    se = Dense(filters // reduction, activation="relu")(se)
+    se = Dense(filters, activation="sigmoid")(se)
+
+    # Scale feature maps
+    return Multiply()([x, se])
+
+
 def residual_block(x, filters):
     shortcut = x
 
@@ -143,6 +161,9 @@ def residual_block(x, filters):
     x = Conv2D(filters, (3, 3), padding="same",
                kernel_regularizer=l2(1e-4))(x)
     x = BatchNormalization()(x)
+
+    # NEW: Channel attention
+    x = se_block(x)
 
     x = Add()([x, shortcut])
     x = Activation("relu")(x)
