@@ -44,7 +44,7 @@ class AudioPredictor:
         spectrogram = np.expand_dims(spectrogram, axis=(0, -1))  # Add batch and channel dimensions
 
         # Get model predictions
-        predictions = self.model.predict(spectrogram)[0]  # Remove batch dimension
+        predictions = self.model.predict(spectrogram, verbose=0)[0]  # Remove batch dimension
 
         # Get top-5 indices and sort by confidence
         top_indices = np.argsort(predictions)[-5:][::-1]
