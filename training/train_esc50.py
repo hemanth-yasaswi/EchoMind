@@ -20,7 +20,9 @@ from tensorflow.keras.layers import (
     GlobalAveragePooling2D,
     Dropout,
     Dense,
+    Add,
 )
+from tensorflow.keras.models import Model
 
 # Access preprocessing folder
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -94,7 +96,7 @@ def load_dataset():
 
 
 def spec_augment(mel, num_freq_masks=1, num_time_masks=1,
-                  freq_mask_width=12, time_mask_width=12):
+                  freq_mask_width=8, time_mask_width=8):
     """
     Lightweight SpecAugment: randomly zeroes a few frequency bands and
     time slices. Applied only to TRAINING data. With only ~26 clips
@@ -130,52 +132,65 @@ def make_train_dataset(X, y, batch_size=32):
     ds = ds.batch(batch_size).prefetch(tf.data.AUTOTUNE)
     return ds
 
+def residual_block(x, filters):
+    shortcut = x
+
+    x = Conv2D(filters, (3, 3), padding="same",
+               kernel_regularizer=l2(1e-4))(x)
+    x = BatchNormalization()(x)
+    x = Activation("relu")(x)
+
+    x = Conv2D(filters, (3, 3), padding="same",
+               kernel_regularizer=l2(1e-4))(x)
+    x = BatchNormalization()(x)
+
+    x = Add()([x, shortcut])
+    x = Activation("relu")(x)
+
+    return x
+
 
 def build_model():
-    model = Sequential([
-        Input(shape=(IMG_SIZE, IMG_SIZE, 1)),
+    inputs = Input(shape=(IMG_SIZE, IMG_SIZE, 1))
 
-        Conv2D(32, (3, 3), padding="same", kernel_regularizer=l2(1e-4)),
-        BatchNormalization(),
-        Activation("relu"),
-        MaxPooling2D((2, 2)),
+    x = Conv2D(32, (3, 3), padding="same",
+               kernel_regularizer=l2(1e-4))(inputs)
+    x = BatchNormalization()(x)
+    x = Activation("relu")(x)
+    x = MaxPooling2D((2, 2))(x)
 
-        Conv2D(64, (3, 3), padding="same", kernel_regularizer=l2(1e-4)),
-        BatchNormalization(),
-        Activation("relu"),
-        MaxPooling2D((2, 2)),
+    x = Conv2D(64, (3, 3), padding="same",
+               kernel_regularizer=l2(1e-4))(x)
+    x = BatchNormalization()(x)
+    x = Activation("relu")(x)
+    x = MaxPooling2D((2, 2))(x)
 
-        Conv2D(128, (3, 3), padding="same", kernel_regularizer=l2(1e-4)),
-        BatchNormalization(),
-        Activation("relu"),
-        MaxPooling2D((2, 2)),
+    x = Conv2D(128, (3, 3), padding="same",
+               kernel_regularizer=l2(1e-4))(x)
+    x = BatchNormalization()(x)
+    x = Activation("relu")(x)
 
-        # GlobalAveragePooling2D instead of Flatten+Dense(256).
-        # With padding="same", the last feature map is 16x16x128 =
-        # 32,768 values -- Flatten -> Dense(256) would need ~8.4M
-        # parameters, wildly overparameterized for ~1,300 training
-        # images. That was the real cause of the exploding val_loss
-        # and near-random val_accuracy: massively overconfident wrong
-        # predictions. GAP collapses each channel to a single value
-        # first, cutting the parameter count by orders of magnitude.
-        GlobalAveragePooling2D(),
+    # NEW: Residual block
+    x = residual_block(x, 128)
 
-        Dense(128, activation="relu", kernel_regularizer=l2(1e-4)),
-        Dropout(0.5),
+    x = MaxPooling2D((2, 2))(x)
 
-        Dense(NUM_CLASSES, activation="softmax"),
-    ])
+    x = GlobalAveragePooling2D()(x)
+    x = Dense(128, activation="relu",
+              kernel_regularizer=l2(1e-4))(x)
+    x = Dropout(0.4)(x)
+
+    outputs = Dense(NUM_CLASSES, activation="softmax")(x)
+
+    model = Model(inputs, outputs)
 
     model.compile(
-        optimizer=Adam(learning_rate=1e-4),
-        # label_smoothing adds extra insurance against the network
-        # becoming overconfident on a small dataset.
+        optimizer=Adam(learning_rate=3e-4),
         loss=CategoricalCrossentropy(label_smoothing=0.1),
         metrics=["accuracy"],
     )
 
     return model
-
 
 def main():
     print("Loading ESC-50 dataset...")
