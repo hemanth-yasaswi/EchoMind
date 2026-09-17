@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-import numpy as np
 from inference.predict import AudioPredictor
 
 
@@ -33,8 +32,7 @@ def main():
         print("Not enough samples in fold 5. Found only", len(test_df))
         return
 
-    samples = test_df.sample(n=5).reset_index(drop=True)
-
+    samples = test_df.sample(n=5, random_state=42).reset_index(drop=True)
     # Process each sample
     correct_predictions = 0
     for idx, row in samples.iterrows():
