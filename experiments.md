@@ -173,3 +173,35 @@ The SE block significantly improved generalization while adding only a small num
 
 
 
+## E06 — Cosine Learning Rate Scheduler
+
+Status: Completed
+
+Hypothesis:
+A cosine decay schedule will provide smoother optimization than ReduceLROnPlateau and improve generalization.
+
+Changed:
+- Replaced ReduceLROnPlateau with CosineDecay.
+
+Constants:
+- Residual + SE architecture
+- Initial learning rate: 3e-4
+- SpecAugment: 8×8
+- Dropout: 0.4
+- Epochs: 100
+- Batch size: 32
+- Label smoothing: 0.1
+
+Results:
+- Train Accuracy: 82.97%
+- Validation Accuracy: 77.81%
+- Test Accuracy: 67.25%
+
+Difference from E05:
++0.25%
+
+Conclusion:
+Cosine decay produced smoother optimization and slightly higher training/validation accuracy, but the test improvement was negligible. The scheduler does not provide a meaningful advantage over the E05 baseline.
+
+
+

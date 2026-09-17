@@ -9,7 +9,6 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.optimizers.schedules import CosineDecay
 from tensorflow.keras.losses import CategoricalCrossentropy
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from tensorflow.keras.regularizers import l2
@@ -207,13 +206,9 @@ def build_model():
 
     model = Model(inputs, outputs)
 
-    lr_schedule = CosineDecay(
-    initial_learning_rate=3e-4,
-    decay_steps=4000,
-    alpha=0.05,
-)
+    # Cosine decay learning rate schedule
     model.compile(
-        optimizer=Adam(learning_rate=lr_schedule),
+        optimizer=Adam(learning_rate=3e-4),
         loss=CategoricalCrossentropy(label_smoothing=0.1),
         metrics=["accuracy"],
     )
@@ -269,11 +264,18 @@ def main():
         save_best_only=True,
     )
 
+    reduce_lr = ReduceLROnPlateau(
+    monitor="val_loss",
+    factor=0.5,
+    patience=8,
+    min_lr=1e-6,
+    )
+    
     model.fit(
         train_ds,
         validation_data=val_ds,
         epochs=100,
-        callbacks=[early_stop, checkpoint],
+        callbacks=[early_stop, checkpoint, reduce_lr],
         verbose=2,
     )
 
