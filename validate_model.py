@@ -1,18 +1,23 @@
 import os
 import pandas as pd
 import numpy as np
-import tensorflow.keras.models
 from inference.predict import AudioPredictor
 
 
 def main():
-    # Load the trained model
-    model_path = "models/esc50_cnn.keras"
+    # Load class label to index mapping
+    label_to_index = {}
     try:
-        model = tensorflow.keras.models.load_model(model_path)
+        with open("esc50_classes.txt", "r") as f:
+            labels = [line.strip() for line in f.readlines()]
+        for idx, label in enumerate(labels):
+            label_to_index[label] = idx
     except Exception as e:
-        print(f"Error loading model from {model_path}: {e}")
+        print(f"Error loading class labels: {e}")
         return
+
+    # Initialize predictor
+    predictor = AudioPredictor()
 
     # Load ESC-50 metadata
     csv_path = "datasets/esc50/meta/esc50.csv"
@@ -30,9 +35,6 @@ def main():
 
     samples = test_df.sample(n=5).reset_index(drop=True)
 
-    # Initialize predictor
-    predictor = AudioPredictor()
-
     # Process each sample
     correct_predictions = 0
     for idx, row in samples.iterrows():
@@ -48,7 +50,8 @@ def main():
             continue
 
         # Extract top-1 prediction
-        predicted_class_idx, predicted_class_label, confidence = predictions[0]
+        predicted_label, confidence = predictions[0]
+        predicted_class_idx = label_to_index.get(predicted_label, -1)
 
         # Determine correctness
         is_correct = predicted_class_idx == true_class_idx
@@ -58,7 +61,7 @@ def main():
         print(f"True Class Index: {true_class_idx}")
         print(f"True Class Label: {true_class_label}")
         print(f"Predicted Class Index: {predicted_class_idx}")
-        print(f"Predicted Class Label: {predicted_class_label}")
+        print(f"Predicted Class Label: {predicted_label}")
         print(f"Confidence: {confidence:.4f}")
         print(f"Correct: {'Yes' if is_correct else 'No'}")
         print("-" * 60)
