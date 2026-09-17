@@ -201,7 +201,3 @@ results/
 ## Author
 
 **Hemanth Yasaswi Mudivarti**
-
-B.Tech Computer Science & Engineering (AI & ML)
-
-Deep Learning • Computer Vision • Full Stack Development
